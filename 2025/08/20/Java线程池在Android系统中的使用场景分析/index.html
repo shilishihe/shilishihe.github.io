@@ -1,0 +1,1028 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="shilishihe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Java线程池在Android系统中的使用场景分析线程池作为Java并发编程的核心组件，其构造函数的参数配置直接决定了资源利用率、系统稳定性和任务调度效率。以下从参数定义、协作机制、高阶配置及避坑实践四个维度深度解析：  ⚙️ 一、ThreadPoolExecutor核心参数详解1. corePoolSize（核心线程数） 定义：线程池长期维持的线程数量，即使空闲也不会销毁（除非开启allowCo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java线程池在Android系统中的使用场景分析">
+<meta property="og:url" content="http://example.com/2025/08/20/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%9C%A8Android%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="个人博客">
+<meta property="og:description" content="Java线程池在Android系统中的使用场景分析线程池作为Java并发编程的核心组件，其构造函数的参数配置直接决定了资源利用率、系统稳定性和任务调度效率。以下从参数定义、协作机制、高阶配置及避坑实践四个维度深度解析：  ⚙️ 一、ThreadPoolExecutor核心参数详解1. corePoolSize（核心线程数） 定义：线程池长期维持的线程数量，即使空闲也不会销毁（除非开启allowCo">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-20T06:39:57.000Z">
+<meta property="article:modified_time" content="2025-08-20T06:41:01.674Z">
+<meta property="article:author" content="shilishihe">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Java线程池在Android系统中的使用场景分析 - 个人博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>个人博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/background.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java线程池在Android系统中的使用场景分析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-20 14:39" pubdate>
+          2025年8月20日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Java线程池在Android系统中的使用场景分析</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Java线程池在Android系统中的使用场景分析"><a href="#Java线程池在Android系统中的使用场景分析" class="headerlink" title="Java线程池在Android系统中的使用场景分析"></a>Java线程池在Android系统中的使用场景分析</h1><p>线程池作为Java并发编程的核心组件，其构造函数的参数配置直接决定了资源利用率、系统稳定性和任务调度效率。以下从<strong>参数定义</strong>、<strong>协作机制</strong>、<strong>高阶配置</strong>及<strong>避坑实践</strong>四个维度深度解析：</p>
+<hr>
+<h3 id="⚙️-一、ThreadPoolExecutor核心参数详解"><a href="#⚙️-一、ThreadPoolExecutor核心参数详解" class="headerlink" title="⚙️ 一、ThreadPoolExecutor核心参数详解"></a>⚙️ 一、ThreadPoolExecutor核心参数详解</h3><h4 id="1-corePoolSize（核心线程数）"><a href="#1-corePoolSize（核心线程数）" class="headerlink" title="1. corePoolSize（核心线程数）"></a>1. <strong><code>corePoolSize</code>（核心线程数）</strong></h4><ul>
+<li><strong>定义</strong>：线程池长期维持的线程数量，即使空闲也不会销毁（除非开启<code>allowCoreThreadTimeOut</code>）</li>
+<li><strong>运行逻辑</strong>：<ul>
+<li>当任务数 ≤ <code>corePoolSize</code>时，<strong>立即创建新线程</strong>执行任务（即使有空闲线程）</li>
+<li>默认不预创建，可通过<code>prestartCoreThread()</code>主动初始化</li>
+</ul>
+</li>
+<li><strong>场景建议</strong>：CPU密集型任务（如图像处理）设为CPU核数，避免线程过多竞争CPU</li>
+</ul>
+<h4 id="2-maximumPoolSize（最大线程数）"><a href="#2-maximumPoolSize（最大线程数）" class="headerlink" title="2. maximumPoolSize（最大线程数）"></a>2. <strong><code>maximumPoolSize</code>（最大线程数）</strong></h4><ul>
+<li><strong>定义</strong>：线程池允许的最大线程数（核心线程 + 非核心线程）</li>
+<li><strong>扩容规则</strong>：<ul>
+<li>仅当<strong>任务队列已满</strong>且当前线程数 &lt; <code>maximumPoolSize</code>时，创建非核心线程</li>
+<li>非核心线程空闲超时(<code>keepAliveTime</code>)后销毁</li>
+</ul>
+</li>
+<li><strong>风险控制</strong>：高并发场景需设上限（如100），防止线程爆炸（<code>Integer.MAX_VALUE</code>为危险值）</li>
+</ul>
+<h4 id="3-keepAliveTime-unit（线程空闲超时）"><a href="#3-keepAliveTime-unit（线程空闲超时）" class="headerlink" title="3. keepAliveTime+ unit（线程空闲超时）"></a>3. <strong><code>keepAliveTime</code>+ <code>unit</code>（线程空闲超时）</strong></h4><ul>
+<li><strong>定义</strong>：非核心线程闲置超过此时长后自动销毁</li>
+<li><strong>特殊配置</strong>：<ul>
+<li>调用<code>allowCoreThreadTimeOut(true)</code>可让核心线程也受超时约束</li>
+<li>设为<code>Long.MAX_VALUE</code>可近似禁用回收（慎用！）</li>
+</ul>
+</li>
+<li><strong>调优建议</strong>：短任务场景（如API请求）设为60秒，长任务场景适当延长</li>
+</ul>
+<h4 id="4-workQueue（任务队列）"><a href="#4-workQueue（任务队列）" class="headerlink" title="4. workQueue（任务队列）"></a>4. <strong><code>workQueue</code>（任务队列）</strong></h4><ul>
+<li><strong>核心作用</strong>：缓存待执行任务，不同队列类型直接影响线程池行为</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>队列类型</strong></th>
+<th><strong>特性</strong></th>
+<th><strong>适用场景</strong></th>
+<th><strong>风险</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SynchronousQueue</code></td>
+<td>无容量队列，任务直接移交线程（无缓存）</td>
+<td>实时性要求高的短任务（OkHttp）</td>
+<td>易触发非核心线程创建</td>
+</tr>
+<tr>
+<td><code>LinkedBlockingQueue</code></td>
+<td>无界队列（默认<code>Integer.MAX_VALUE</code>）</td>
+<td>流量平稳的串行任务（数据库操作）</td>
+<td>可能引发OOM</td>
+</tr>
+<tr>
+<td><code>ArrayBlockingQueue</code></td>
+<td>有界队列（固定容量）</td>
+<td>需控制内存的并发场景</td>
+<td>队列满时触发拒绝策略</td>
+</tr>
+<tr>
+<td><code>PriorityBlockingQueue</code></td>
+<td>优先级队列（任务需实现<code>Comparable</code>）</td>
+<td>任务分级调度（紧急任务优先）</td>
+<td>可能引起饥饿问题</td>
+</tr>
+</tbody></table>
+<h4 id="5-threadFactory（线程工厂）"><a href="#5-threadFactory（线程工厂）" class="headerlink" title="5. threadFactory（线程工厂）"></a>5. <strong><code>threadFactory</code>（线程工厂）</strong></h4><ul>
+<li><p><strong>核心能力</strong>：自定义线程属性（名称、优先级、守护状态）</p>
+</li>
+<li><p><strong>实战案例</strong>：</p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey">ThreadFactory factory = r -&gt; &#123;  <br>    <span class="hljs-keyword">Thread</span> t = <span class="hljs-keyword">new</span> <span class="hljs-keyword">Thread</span>(r)<span class="hljs-comment">;  </span><br>    t.setName(<span class="hljs-string">&quot;network-thread-&quot;</span> + t.getId())<span class="hljs-comment">;  </span><br>    t.setPriority(<span class="hljs-keyword">Thread</span>.NORM_PRIORITY)<span class="hljs-comment">;  </span><br>    <span class="hljs-keyword">return</span> t<span class="hljs-comment">;  </span><br>&#125;<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>价值</strong>：便于日志追踪和问题定位（如定位网络线程泄露）</p>
+</li>
+</ul>
+<h4 id="6-handler（拒绝策略）"><a href="#6-handler（拒绝策略）" class="headerlink" title="6. handler（拒绝策略）"></a>6. <strong><code>handler</code>（拒绝策略）</strong></h4><ul>
+<li><strong>触发条件</strong>：任务队列满且线程数达<code>maximumPoolSize</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>策略类型</strong></th>
+<th><strong>行为</strong></th>
+<th><strong>适用场景</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>AbortPolicy</code>（默认）</td>
+<td>抛出<code>RejectedExecutionException</code></td>
+<td>关键业务（如支付订单）</td>
+</tr>
+<tr>
+<td><code>CallerRunsPolicy</code></td>
+<td>由提交任务的线程直接执行</td>
+<td>避免任务丢失的通用场景</td>
+</tr>
+<tr>
+<td><code>DiscardOldestPolicy</code></td>
+<td>丢弃队列最旧任务，重试新任务</td>
+<td>实时数据流（如传感器数据）</td>
+</tr>
+<tr>
+<td><code>DiscardPolicy</code></td>
+<td>静默丢弃新任务</td>
+<td>非关键任务（统计日志）</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="🔄-二、参数协作机制与任务提交流程"><a href="#🔄-二、参数协作机制与任务提交流程" class="headerlink" title="🔄 二、参数协作机制与任务提交流程"></a>🔄 二、参数协作机制与任务提交流程</h3><ol>
+<li><p><strong>任务提交优先级</strong>：</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs coq">graph TD<br>A[新任务提交] --&gt; B&#123;线程数 &lt; corePoolSize?&#125;<br>B --&gt;|<span class="hljs-type">是| C</span>[创建核心线程执行]<br>B --&gt;|<span class="hljs-type">否| D</span>&#123;任务队列未满?&#125;<br>D --&gt;|<span class="hljs-type">是| E</span>[任务入队等待]<br>D --&gt;|<span class="hljs-type">否| F</span>&#123;线程数 &lt; maximumPoolSize?&#125;<br>F --&gt;|<span class="hljs-type">是| G</span>[创建非核心线程执行]<br>F --&gt;|<span class="hljs-type">否| H</span>[触发拒绝策略]<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>线程回收逻辑</strong>：</p>
+<ul>
+<li>非核心线程闲置 &gt; <code>keepAliveTime</code>→ 自动销毁</li>
+<li>核心线程默认永久存活（除非开启<code>allowCoreThreadTimeOut</code>）</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="🛠️-三、高阶配置与避坑指南"><a href="#🛠️-三、高阶配置与避坑指南" class="headerlink" title="🛠️ 三、高阶配置与避坑指南"></a>🛠️ 三、高阶配置与避坑指南</h3><ol>
+<li><strong>动态调参</strong>：<ul>
+<li>运行时修改<code>corePoolSize</code>&#x2F;<code>maximumPoolSize</code>（需谨慎同步）</li>
+<li>示例：突发流量时临时扩容<code>maximumPoolSize</code></li>
+</ul>
+</li>
+<li><strong>监控指标</strong>：<ul>
+<li><code>getActiveCount()</code>：活跃线程数</li>
+<li><code>getQueue().size()</code>：队列堆积量</li>
+<li><strong>推荐</strong>：集成Micrometer暴露线程池Metrics</li>
+</ul>
+</li>
+<li><strong>典型陷阱</strong>：<ul>
+<li><strong>OOM风险</strong>：无界队列(<code>LinkedBlockingQueue</code>) + 长任务 → 内存溢出</li>
+<li><strong>响应延迟</strong>：<code>FixedThreadPool</code>处理慢任务时阻塞队列</li>
+<li><strong>解决方案</strong>：<ul>
+<li>使用有界队列 + 合理拒绝策略</li>
+<li>I&#x2F;O密集型任务调高<code>maximumPoolSize</code>（建议 ≤ 2 * CPU核数）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="💎-四、终极实践建议"><a href="#💎-四、终极实践建议" class="headerlink" title="💎 四、终极实践建议"></a>💎 四、终极实践建议</h3><ol>
+<li><p><strong>禁用<code>Executors</code>快捷工厂</strong>：</p>
+<ul>
+<li><code>newFixedThreadPool()</code>和<code>newCachedThreadPool()</code>隐藏OOM风险</li>
+<li><strong>替代方案</strong>：手动构造<code>ThreadPoolExecutor</code>控制所有参数</li>
+</ul>
+</li>
+<li><p><strong>资源隔离原则</strong>：</p>
+<ul>
+<li>独立线程池处理网络&#x2F;DB&#x2F;计算任务，避免相互阻塞</li>
+<li>示例：Android中Glide图片加载使用独立线程池</li>
+</ul>
+</li>
+<li><p><strong>超时兜底策略</strong>：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs arduino">executor.<span class="hljs-built_in">execute</span>(() -&gt; &#123;<br>    Future&lt;?&gt; future = subExecutor.<span class="hljs-built_in">submit</span>(task);<br>    <span class="hljs-keyword">try</span> &#123;<br>        future.<span class="hljs-built_in">get</span>(<span class="hljs-number">500</span>, TimeUnit.MILLISECONDS); <span class="hljs-comment">// 超时中断</span><br>    &#125; <span class="hljs-built_in">catch</span> (TimeoutException e) &#123;<br>        future.<span class="hljs-built_in">cancel</span>(<span class="hljs-literal">true</span>);<br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure></li>
+</ol>
+<blockquote>
+<p>深入理解每个参数的<strong>设计意图</strong>与<strong>相互制约关系</strong>，是构建高并发、高可靠系统的基石。建议结合<code>jstack</code>和<code>Arthas</code>分析线上线程池状态，持续优化参数配置。</p>
+</blockquote>
+<p>在Android开发中，线程池是管理并发任务的核心工具，其设计直接影响应用性能、资源利用率和稳定性。以下从<strong>系统级应用场景</strong>、<strong>线程池类型对比</strong>、<strong>参数配置艺术</strong>、<strong>避坑指南</strong>及<strong>框架对比</strong>五个维度深度解析：</p>
+<hr>
+<h3 id="一、系统级线程池应用场景"><a href="#一、系统级线程池应用场景" class="headerlink" title="一、系统级线程池应用场景"></a>一、系统级线程池应用场景</h3><ol>
+<li><strong>图片加载框架（如Glide）</strong><ul>
+<li><strong>线程池类型</strong>：<code>FixedThreadPool</code>（CPU核心数）</li>
+<li><strong>原理</strong>：通过固定线程数避免频繁创建&#x2F;销毁线程，任务队列采用优先级调度确保可见图片优先加载。</li>
+<li><strong>优势</strong>：平衡CPU资源与任务吞吐量，防止列表滑动时线程爆炸。</li>
+</ul>
+</li>
+<li><strong>网络请求框架（如Retrofit + OkHttp）</strong><ul>
+<li><strong>线程池类型</strong>：<code>CachedThreadPool</code></li>
+<li><strong>原理</strong>：<code>SynchronousQueue</code>确保请求即时执行，临时线程60秒空闲回收。</li>
+<li><strong>风险</strong>：高并发时线程数可能激增（最大<code>Integer.MAX_VALUE</code>），需配合连接池限制。</li>
+</ul>
+</li>
+<li><strong>数据库操作（Room）</strong><ul>
+<li><strong>线程池类型</strong>：<code>SingleThreadExecutor</code></li>
+<li><strong>原理</strong>：单线程顺序执行任务，避免并发写导致SQLite锁冲突。</li>
+<li><strong>场景</strong>：事务操作、先写后读等需严格顺序的任务。</li>
+</ul>
+</li>
+<li><strong>定时任务（WorkManager）</strong><ul>
+<li><strong>线程池类型</strong>：<code>ScheduledThreadPool</code></li>
+<li><strong>原理</strong>：<code>scheduleAtFixedRate()</code>以固定速率执行周期任务（如心跳包），延迟队列基于最小堆实现。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="二、四类线程池深度对比"><a href="#二、四类线程池深度对比" class="headerlink" title="二、四类线程池深度对比"></a>二、四类线程池深度对比</h3><table>
+<thead>
+<tr>
+<th><strong>线程池类型</strong></th>
+<th><strong>工作特性</strong></th>
+<th><strong>内部实现</strong></th>
+<th><strong>适用场景</strong></th>
+<th><strong>风险</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>FixedThreadPool</strong></td>
+<td>固定线程数，无临时线程</td>
+<td>核心线程数&#x3D;最大线程数，无界<code>LinkedBlockingQueue</code></td>
+<td>CPU密集型任务（图片压缩、计算）</td>
+<td>队列堆积导致OOM</td>
+</tr>
+<tr>
+<td><strong>CachedThreadPool</strong></td>
+<td>自动扩容，60秒回收临时线程</td>
+<td>核心线程数&#x3D;0，<code>SynchronousQueue</code>（无缓存）</td>
+<td>短期异步任务（网络请求、日志上报）</td>
+<td>线程数失控（理论无上限）</td>
+</tr>
+<tr>
+<td><strong>SingleThreadExecutor</strong></td>
+<td>单线程顺序执行</td>
+<td>核心线程数&#x3D;1，无界<code>LinkedBlockingQueue</code></td>
+<td>数据库事务、文件顺序读写</td>
+<td>任务阻塞导致延迟</td>
+</tr>
+<tr>
+<td><strong>ScheduledThreadPool</strong></td>
+<td>支持延迟&#x2F;周期性任务</td>
+<td>核心线程固定，<code>DelayedWorkQueue</code></td>
+<td>心跳检测、定时数据同步</td>
+<td>周期任务重叠执行</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>注</strong>：<code>SingleThreadExecutor</code>本质是<code>FixedThreadPool(1)</code>的特例，但通过<code>FinalizableDelegatedExecutorService</code>包装防止类型强转修改参数。</p>
+</blockquote>
+<hr>
+<h3 id="三、参数配置的艺术"><a href="#三、参数配置的艺术" class="headerlink" title="三、参数配置的艺术"></a>三、参数配置的艺术</h3><ul>
+<li><p><strong>CPU密集型任务</strong>（如图像处理）：</p>
+<p>线程数 ≤ CPU核心数（<code>Runtime.getRuntime().availableProcessors()</code>），避免过多线程竞争CPU。</p>
+</li>
+<li><p><strong>I&#x2F;O密集型任务</strong>（如网络请求）：</p>
+<p>线程数可扩至2×CPU核心数，利用I&#x2F;O等待时间执行其他任务。</p>
+</li>
+<li><p><strong>队列选择</strong>：</p>
+<ul>
+<li><code>ArrayBlockingQueue</code>（有界）：控制内存，但需合理拒绝策略；</li>
+<li><code>SynchronousQueue</code>（无缓存）：避免任务堆积，适合实时任务。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="四、避坑指南：线程池的隐患与优化"><a href="#四、避坑指南：线程池的隐患与优化" class="headerlink" title="四、避坑指南：线程池的隐患与优化"></a>四、避坑指南：线程池的隐患与优化</h3><ol>
+<li><strong>内存泄漏</strong><ul>
+<li><strong>根因</strong>：未调用<code>shutdown()</code>导致线程无法回收（尤其<code>Static</code>线程池）。</li>
+<li><strong>解决</strong>：在<code>onDestroy()</code>中调用<code>shutdownNow()</code>并清空任务队列。</li>
+</ul>
+</li>
+<li><strong>拒绝策略选择</strong><ul>
+<li><code>CallerRunsPolicy</code>：由调用线程执行任务（如主线程），可作简易背压机制；</li>
+<li><code>DiscardOldestPolicy</code>：丢弃旧任务，适合实时数据流。</li>
+</ul>
+</li>
+<li><strong>线程复用失效</strong><ul>
+<li><code>CachedThreadPool</code>在任务执行时间过长时，会持续创建新线程，应改用<code>FixedThreadPool</code>限制上限。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="五、与替代方案的横向对比"><a href="#五、与替代方案的横向对比" class="headerlink" title="五、与替代方案的横向对比"></a>五、与替代方案的横向对比</h3><ol>
+<li><strong>HandlerThread</strong><ul>
+<li><strong>本质</strong>：单线程+消息队列，适用于串行、低频率任务（如本地日志写入）。</li>
+<li><strong>局限</strong>：无法动态扩容，并发能力弱于线程池。</li>
+</ul>
+</li>
+<li><strong>协程（Kotlin）</strong><ul>
+<li><strong>优势</strong>：轻量级线程（节省内存），结构化取消机制；</li>
+<li><strong>场景</strong>：替代回调嵌套，但底层仍依赖线程池调度（如<code>Dispatchers.IO</code>）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="总结：线程池的架构级思考"><a href="#总结：线程池的架构级思考" class="headerlink" title="总结：线程池的架构级思考"></a>总结：线程池的架构级思考</h3><ul>
+<li><strong>性能敏感场景</strong>：优先自定义<code>ThreadPoolExecutor</code>，而非<code>Executors</code>预设（避免无界队列风险）；</li>
+<li><strong>资源隔离</strong>：不同业务（如网络&#x2F;DB&#x2F;计算）使用独立线程池，防止相互阻塞；</li>
+<li><strong>监控加持</strong>：通过<code>ThreadPoolExecutor</code>的<code>getActiveCount()</code>等方法实时监控负载。</li>
+</ul>
+<blockquote>
+<p>在移动端资源受限环境下，线程池的精细化配置是平衡<strong>性能</strong>、<strong>资源</strong>与<strong>稳定性</strong>的关键。建议结合<code>Systrace</code>分析任务调度瓶颈，持续优化参数。</p>
+</blockquote>
+<p>在 Android 和 Java 应用中，监控线程池是保障系统稳定性和性能优化的关键环节。以下是多维度监控方案及实践建议：</p>
+<hr>
+<h3 id="⚙️-一、原生-API-监控（编码层）"><a href="#⚙️-一、原生-API-监控（编码层）" class="headerlink" title="⚙️ 一、原生 API 监控（编码层）"></a>⚙️ <strong>一、原生 API 监控（编码层）</strong></h3><p>通过 <code>ThreadPoolExecutor</code>提供的内置方法获取实时指标：</p>
+<ol>
+<li><p><strong>核心指标</strong>：</p>
+<ul>
+<li><code>getPoolSize()</code>：当前线程总数（核心+非核心）。</li>
+<li><code>getActiveCount()</code>：正在执行任务的线程数（瞬时值）。</li>
+<li><code>getQueue().size()</code>：任务队列堆积量（需警惕无界队列 OOM 风险）。</li>
+<li><code>getCompletedTaskCount()</code>：已完成任务总量（统计吞吐量）。</li>
+<li><code>getLargestPoolSize()</code>：历史最大线程数（评估资源峰值）。</li>
+</ul>
+</li>
+<li><p><strong>自定义定时监控任务</strong>：</p>
+<p>使用 <code>ScheduledExecutorService</code>定期采集数据并输出日志或告警：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs smali">ScheduledExecutorService<span class="hljs-built_in"> monitor </span>= Executors.newSingleThreadScheduledExecutor();<br>monitor.scheduleAtFixedRate(() -&gt; &#123;<br>    log.info(<span class="hljs-string">&quot;Active: &#123;&#125;, Queue: &#123;&#125;&quot;</span>, executor.getActiveCount(), executor.getQueue().size());<br>&#125;, 0, 5, TimeUnit.SECONDS); // 每 5 秒采集一次。<br></code></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h3 id="🛠️-二、扩展重写线程池（增强监控）"><a href="#🛠️-二、扩展重写线程池（增强监控）" class="headerlink" title="🛠️ 二、扩展重写线程池（增强监控）"></a>🛠️ <strong>二、扩展重写线程池（增强监控）</strong></h3><p>继承 <code>ThreadPoolExecutor</code>并重写钩子方法，实现精细化监控：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs scala">public <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MonitoredThreadPool</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ThreadPoolExecutor</span> </span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> void beforeExecute(<span class="hljs-type">Thread</span> t, <span class="hljs-type">Runnable</span> r) &#123;<br>        <span class="hljs-keyword">super</span>.beforeExecute(t, r);<br>        <span class="hljs-comment">// 记录任务开始时间、线程状态。</span><br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> void afterExecute(<span class="hljs-type">Runnable</span> r, <span class="hljs-type">Throwable</span> t) &#123;<br>        <span class="hljs-keyword">super</span>.afterExecute(r, t);<br>        <span class="hljs-comment">// 统计任务耗时、异常捕获。</span><br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> void terminated() &#123;<br>        <span class="hljs-keyword">super</span>.terminated();<br>        <span class="hljs-comment">// 线程池关闭时输出最终统计报告。</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>优势</strong>：可监控单个任务生命周期，统计平均&#x2F;最大耗时等。</p>
+<hr>
+<h3 id="📊-三、JMX-与可视化工具（生产级监控）"><a href="#📊-三、JMX-与可视化工具（生产级监控）" class="headerlink" title="📊 三、JMX 与可视化工具（生产级监控）"></a>📊 <strong>三、JMX 与可视化工具（生产级监控）</strong></h3><ol>
+<li><p><strong>JMX（Java Management Extensions）</strong>：</p>
+<ul>
+<li><p>暴露线程池 MBean，通过 JConsole 或 VisualVM 实时查看：</p>
+<ul>
+<li>线程数、队列大小、拒绝任务数等指标。</li>
+</ul>
+</li>
+<li><p><strong>操作示例</strong>：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs actionscript">ManagementFactory.getPlatformMBeanServer().registerMBean(<br>    executor, <span class="hljs-keyword">new</span> ObjectName(<span class="hljs-string">&quot;com.app:type=ThreadPool&quot;</span>)<br>); <span class="hljs-comment">// 注册 MBean。</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>可视化工具</strong>：</p>
+<ul>
+<li><strong>VisualVM</strong>：实时监控线程状态、CPU 占用、堆内存（内置 JDK）。</li>
+<li><strong>Prometheus + Grafana</strong>：<ul>
+<li>通过 <code>micrometer-core</code>暴露指标（如 <code>executor_queue_size</code>）。</li>
+<li>配置 Dashboard 展示队列堆积趋势、线程利用率。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="🔧-四、第三方框架集成（高效运维）"><a href="#🔧-四、第三方框架集成（高效运维）" class="headerlink" title="🔧 四、第三方框架集成（高效运维）"></a>🔧 <strong>四、第三方框架集成（高效运维）</strong></h3><ol>
+<li><p><strong>Arthas</strong>：</p>
+<ul>
+<li><p>命令行诊断工具，动态查看线程池状态：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">watch java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span> getActiveCount returnObj<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>支持在线分析任务阻塞原因。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Spring Boot Actuator</strong>：</p>
+<ul>
+<li><p>暴露 <code>/actuator/metrics</code>端点，集成 <code>ThreadPoolTaskExecutor</code>指标：</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-symbol">management:</span><br><span class="hljs-symbol">  metrics:</span><br><span class="hljs-symbol">    tags:</span><br><span class="hljs-symbol">      application:</span> $<span class="hljs-punctuation">&#123;</span>spring.application.name<span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>监控指标：<code>executor_active_threads</code>、<code>executor_completed_tasks</code>。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>Hippo4j</strong>：</p>
+<ul>
+<li>动态调整线程池参数（如核心线程数），实时查看队列堆积告警。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="🧩-五、异常与拒绝策略监控"><a href="#🧩-五、异常与拒绝策略监控" class="headerlink" title="🧩 五、异常与拒绝策略监控"></a>🧩 <strong>五、异常与拒绝策略监控</strong></h3><ol>
+<li><p><strong>异常捕获</strong>：</p>
+<ul>
+<li><p>通过 <code>Future</code>捕获任务异常：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs applescript">Future&lt;?&gt; future = executor.submit(task);<br><span class="hljs-keyword">try</span> &#123;<br>    future.<span class="hljs-keyword">get</span>();<br>&#125; catch (ExecutionException e) &#123;<br>    <span class="hljs-built_in">log</span>.<span class="hljs-keyword">error</span>(<span class="hljs-string">&quot;Task failed&quot;</span>, e.getCause());<br>&#125;。<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>设置全局异常处理器：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs livescript">ThreadFactory factory = <span class="hljs-keyword">new</span> ThreadFactoryBuilder()<br>    .setUncaughtExceptionHandler<span class="hljs-function"><span class="hljs-params">((t, e) -&gt; log.error(<span class="hljs-string">&quot;Thread &#123;&#125; crashed&quot;</span>, t.getName(), e))</span></span><br><span class="hljs-function">    .<span class="hljs-title">build</span><span class="hljs-params">()</span>;。</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>拒绝策略统计</strong>：</p>
+<ul>
+<li><p>自定义 <code>RejectedExecutionHandler</code>记录拒绝次数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LoggingRejectHandler</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">RejectedExecutionHandler</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">AtomicInteger</span> <span class="hljs-variable">counter</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicInteger</span>();<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">rejectedExecution</span><span class="hljs-params">(Runnable r, ThreadPoolExecutor e)</span> &#123;<br>        counter.incrementAndGet();<br>    &#125;<br>&#125;。<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="💎-总结：监控方案选择建议"><a href="#💎-总结：监控方案选择建议" class="headerlink" title="💎 总结：监控方案选择建议"></a>💎 <strong>总结：监控方案选择建议</strong></h3><table>
+<thead>
+<tr>
+<th><strong>场景</strong></th>
+<th><strong>推荐方案</strong></th>
+<th><strong>核心优势</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开发调试</td>
+<td>原生 API + 定时日志</td>
+<td>快速实现，无依赖</td>
+</tr>
+<tr>
+<td>生产环境实时监控</td>
+<td>Prometheus + Grafana</td>
+<td>可视化告警，历史分析</td>
+</tr>
+<tr>
+<td>动态调参需求</td>
+<td>Hippo4j</td>
+<td>线程池参数热更新</td>
+</tr>
+<tr>
+<td>在线问题诊断</td>
+<td>Arthas</td>
+<td>无需重启，深度追踪</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>避坑指南</strong>：</p>
+<ul>
+<li>避免高频调用 <code>getQueue().size()</code>（某些队列实现为 O(n) 操作）。</li>
+<li>无界队列（如 <code>LinkedBlockingQueue</code>）需配合拒绝策略防 OOM。</li>
+<li>监控线程池状态机（RUNNING&#x2F;SHUTDOWN）确保优雅关闭。</li>
+</ul>
+</blockquote>
+<p>通过分层监控策略，可精准定位资源瓶颈（如队列突增、线程泄漏），结合性能工具（如 Systrace）优化任务调度逻辑。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java线程池在Android系统中的使用场景分析</div>
+      <div>http://example.com/2025/08/20/Java线程池在Android系统中的使用场景分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>shilishihe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/19/Dio-%E9%98%BF%E9%87%8C%E4%BA%91-HTTPDNS%EF%BC%88HTTP-API%EF%BC%89%E5%AE%9E%E7%8E%B0%E8%B7%A8%E5%B9%B3%E5%8F%B0%E5%8A%A8%E6%80%81%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90%E7%9B%B4%E8%BF%9E%E6%96%B9%E6%A1%88/" title="Dio + 阿里云 HTTPDNS（HTTP API）实现跨平台动态域名解析直连方案">
+                        <span class="hidden-mobile">Dio + 阿里云 HTTPDNS（HTTP API）实现跨平台动态域名解析直连方案</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
